@@ -26,12 +26,9 @@ public class CustomPickerProxy extends TiViewProxy {
 	private static final int MSG_SET_TIME = TiViewProxy.MSG_LAST_ID + 4004;
 	private static final int MSG_SET_SEPARATOR_SIZE = TiViewProxy.MSG_LAST_ID + 4005;
 	
-	//private static HashSet<KrollEventCallback> listeners;
-
 	public CustomPickerProxy() {
 		super();
 		Log.d(LCAT, "Class constructor called");
-		//listeners = new HashSet<KrollEventCallback> ();
 	}
 
 	@Override
@@ -47,18 +44,14 @@ public class CustomPickerProxy extends TiViewProxy {
 	@Override
 	public boolean handleMessage(Message message) {
 		AsyncResult result = null;
-		try {
-			Log.d(LCAT, "toString() :" + message.toString());
-			Log.d(LCAT, "getClass() :" + message.getClass());
-			if (message != null) {
-				result = (AsyncResult) message.obj;
-			}
-			postOnMain(result.getArg(), message.what);
-			
-			if (result != null) {
-				result.setResult(null);
-			}
-		} catch (Exception e) {}
+		if (message != null) {
+			result = (AsyncResult) message.obj;
+		}
+		postOnMain(result.getArg(), message.what);
+		
+		if (result != null) {
+			result.setResult(null);
+		}
 		return true;
 	}
 	
@@ -202,11 +195,4 @@ public class CustomPickerProxy extends TiViewProxy {
 			}
 		});
 	}
-	/*public int addEventListener (String eventName, KrollEventCallback callback) {
-		if (eventName.equals("change")) {
-			return super.addEventListener(eventName, callback);
-		}
-		listeners.add(callback);
-	}*/
-
 }
