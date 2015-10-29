@@ -6,7 +6,6 @@ import org.appcelerator.kroll.KrollDict;
 import org.appcelerator.kroll.annotations.Kroll;
 import org.appcelerator.kroll.common.AsyncResult;
 import org.appcelerator.kroll.common.TiMessenger;
-import org.appcelerator.titanium.TiApplication;
 import org.appcelerator.titanium.proxy.TiViewProxy;
 import org.appcelerator.titanium.util.TiConvert;
 import org.appcelerator.titanium.view.TiUIView;
@@ -43,16 +42,41 @@ public class CustomPickerProxy extends TiViewProxy {
 	
 	@Override
 	public boolean handleMessage(Message message) {
-		AsyncResult result = null;
-		if (message != null) {
-			result = (AsyncResult) message.obj;
+		switch (message.what) {
+			case MSG_SET_DIVIDERS_COLOR: {
+				AsyncResult result = (AsyncResult)message.obj;
+				handleMessageSetDividersColor(result.getArg());
+				result.setResult(null);
+				return true;
+			}
+			case MSG_SET_FOREGROUND_COLOR: {
+				AsyncResult result = (AsyncResult)message.obj;
+				handleMessageSetForegroundColor(result.getArg());
+				result.setResult(null);
+				return true;
+			}
+			case MSG_SET_MODE_24: {
+				AsyncResult result = (AsyncResult)message.obj;
+				handleMessageSetMode24(result.getArg());
+				result.setResult(null);
+				return true;
+			}
+			case MSG_SET_TIME: {
+				AsyncResult result = (AsyncResult)message.obj;
+				handleMessageSetTime(result.getArg());
+				result.setResult(null);
+				return true;
+			}
+			case MSG_SET_SEPARATOR_SIZE: {
+				AsyncResult result = (AsyncResult)message.obj;
+				handleMessageSetSeparatorSize(result.getArg());
+				result.setResult(null);
+				return true;
+			}
+			default: {
+				return super.handleMessage(message);
+			}
 		}
-		postOnMain(result.getArg(), message.what);
-		
-		if (result != null) {
-			result.setResult(null);
-		}
-		return true;
 	}
 	
 	@Kroll.setProperty @Kroll.method
@@ -60,11 +84,7 @@ public class CustomPickerProxy extends TiViewProxy {
 		int color;
 		try {
 			color = TiConvert.toColor(colorString);
-			if (TiApplication.isUIThread()) {
-				postOnMain(color, MSG_SET_DIVIDERS_COLOR);
-			} else {
-				TiMessenger.sendBlockingMainMessage(getMainHandler().obtainMessage(MSG_SET_DIVIDERS_COLOR), color);
-			}
+			TiMessenger.sendBlockingMainMessage(getMainHandler().obtainMessage(MSG_SET_DIVIDERS_COLOR), color);
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
 		}
@@ -84,11 +104,7 @@ public class CustomPickerProxy extends TiViewProxy {
 		int color;
 		try {
 			color = TiConvert.toColor(colorString);
-			if (TiApplication.isUIThread()) {
-				postOnMain(color, MSG_SET_FOREGROUND_COLOR);
-			} else {
-				TiMessenger.sendBlockingMainMessage(getMainHandler().obtainMessage(MSG_SET_FOREGROUND_COLOR), color);
-			}
+			TiMessenger.sendBlockingMainMessage(getMainHandler().obtainMessage(MSG_SET_FOREGROUND_COLOR), color);
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();			
 		}
@@ -105,11 +121,7 @@ public class CustomPickerProxy extends TiViewProxy {
 	
 	@Kroll.setProperty @Kroll.method
 	public void setFormat24 (boolean format24) {
-		if (TiApplication.isUIThread()) {
-			postOnMain(format24, MSG_SET_MODE_24);
-		} else {
-			TiMessenger.sendBlockingMainMessage(getMainHandler().obtainMessage(MSG_SET_MODE_24), format24);
-		}
+		TiMessenger.sendBlockingMainMessage(getMainHandler().obtainMessage(MSG_SET_MODE_24), format24);
 	}
 	
 	@Kroll.getProperty @Kroll.method
@@ -123,11 +135,7 @@ public class CustomPickerProxy extends TiViewProxy {
 	
 	@Kroll.setProperty @Kroll.method
 	public void setSeparatorSize(Object size) {
-		if (TiApplication.isUIThread()) {
-			postOnMain(size, MSG_SET_SEPARATOR_SIZE);
-		} else {
-			TiMessenger.sendBlockingMainMessage(getMainHandler().obtainMessage(MSG_SET_SEPARATOR_SIZE), size);
-		}
+		TiMessenger.sendBlockingMainMessage(getMainHandler().obtainMessage(MSG_SET_SEPARATOR_SIZE), size);
 	}
 	
 	@Kroll.getProperty @Kroll.method
@@ -142,12 +150,9 @@ public class CustomPickerProxy extends TiViewProxy {
 	
 	@Kroll.setProperty @Kroll.method
 	public void setValue (Object timeObject) {
-		if (TiApplication.isUIThread()) {
-			postOnMain(timeObject, MSG_SET_TIME);
-		} else {
-			TiMessenger.sendBlockingMainMessage(getMainHandler().obtainMessage(MSG_SET_TIME), timeObject);
-		}
+		TiMessenger.sendBlockingMainMessage(getMainHandler().obtainMessage(MSG_SET_TIME), timeObject);
 	}
+	
 	@Kroll.getProperty @Kroll.method
 	public Object getValue () {
 		CustomPickerView view = (CustomPickerView)getOrCreateView();
@@ -157,42 +162,43 @@ public class CustomPickerProxy extends TiViewProxy {
 		return null;
 	}
 	
-	public void postOnMain (final Object arg, final int message) {
-		TiMessenger.postOnMain(new Thread() {
-			@Override
-			public void run () {
-				CustomPickerView view = (CustomPickerView)getOrCreateView();
-				switch (message) {
-					case MSG_SET_DIVIDERS_COLOR: {
-						Integer color = (Integer)arg;
-						view.setDividersColor(color);
-						break;
-					}
-					case MSG_SET_FOREGROUND_COLOR: {
-						Integer color = (Integer)arg;
-						view.setForegroundColor(color);
-						break;
-					}
-					case MSG_SET_MODE_24: {
-						Boolean format24 = (Boolean)arg;
-						view.setFormat24(format24);
-						break;
-					}
-					case MSG_SET_TIME: {
-						Date time = TiConvert.toDate(arg);
-						view.setTime(time);
-						break;
-					}
-					case MSG_SET_SEPARATOR_SIZE: {
-						Float size = TiConvert.toFloat(arg);
-						view.setSeparatorSize(size);
-						break;
-					}
-					default: {
-						return;
-					}
-				}
-			}
-		});
+	private void handleMessageSetDividersColor(Object arg) {
+		CustomPickerView view = (CustomPickerView)peekView();
+		if (view != null) {
+			Integer color = (Integer)arg;
+			view.setDividersColor(color);		
+		}
+	}
+	
+	private void handleMessageSetForegroundColor(Object arg) {
+		CustomPickerView view = (CustomPickerView)peekView();
+		if (view != null) {
+			Integer color = (Integer)arg;
+			view.setForegroundColor(color);
+		}
+	}
+	
+	private void handleMessageSetMode24(Object arg) {
+		CustomPickerView view = (CustomPickerView)peekView();
+		if (view != null) {
+			Boolean format24 = (Boolean)arg;
+			view.setFormat24(format24);
+		}
+	}
+	
+	private void handleMessageSetTime(Object arg) {
+		CustomPickerView view = (CustomPickerView)peekView();
+		if (view != null) {
+			Date time = TiConvert.toDate(arg);
+			view.setTime(time);
+		}
+	}
+	
+	private void handleMessageSetSeparatorSize(Object arg) {
+		CustomPickerView view = (CustomPickerView)peekView();
+		if (view != null) {
+			Float size = TiConvert.toFloat(arg);
+			view.setSeparatorSize(size);
+		}
 	}
 }

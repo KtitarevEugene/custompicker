@@ -12,28 +12,23 @@ var label = Ti.UI.createLabel();
 win.add(label);
 win.open();
 
-// TODO: write your module tests here
-var custompicker = require('com.takemeoutto.custompicker');
-Ti.API.info("module is => " + custompicker);
+// module test
+var custompicker = require('com.takemeoutto.custompicker'),
+    picker;
 
-label.text = custompicker.example();
-
-Ti.API.info("module exampleProp is => " + custompicker.exampleProp);
-custompicker.exampleProp = "This is a test value";
-
-if (Ti.Platform.name == "android") {
-	var proxy = custompicker.createExample({
-		message: "Creating an example Proxy",
-		backgroundColor: "red",
+if (OS_ANDROID) {
+	picker = custompicker.createCustomPicker({
 		width: 100,
 		height: 100,
 		top: 100,
-		left: 150
+		left: 150,
+        backgroundColor: "white",
+        format24: true,                 // 24-hour time format 
+        dividersColor: 'transparent',   // dividers color
+        foregroundColor: 'black',       // foreground color
+        separatorSize: 28.0             // colon separator size
 	});
 
-	proxy.printMessage("Hello world!");
-	proxy.message = "Hi world!.  It's me again.";
-	proxy.printMessage("Hello world!");
-	win.add(proxy);
+	win.add(picker);
 }
 
