@@ -1,4 +1,6 @@
 android/build/*
 build/*
 bin/*
+android/dist/*
+android/libs/*
 .DS_Store
