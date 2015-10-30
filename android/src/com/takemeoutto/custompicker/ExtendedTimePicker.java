@@ -1,7 +1,9 @@
 package com.takemeoutto.custompicker;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -23,10 +25,11 @@ public class ExtendedTimePicker extends TimePicker {
 	private static final String SELECTOR_WHEEL_PAINT = "mSelectorWheelPaint";
 	
 	private int separatorId;
-	private ArrayList<Integer> pickersIds;
+	private Map<String,Integer> pickersIds;
 
 	private int dividersColor;
 	private int foregroundColor;
+	private int innerPadding;
 
 	public ExtendedTimePicker(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
@@ -44,29 +47,32 @@ public class ExtendedTimePicker extends TimePicker {
 		super(context);
 		initIds();
 		Log.d(LCAT, "constructor called");
+		setPadding(getPaddingLeft(), getPaddingTop(), getPaddingRight() + 20, getPaddingBottom());
 	}
 
 	private void initIds() {
 		Resources system = Resources.getSystem();
-		pickersIds = new ArrayList<Integer> ();
-		pickersIds.add(system.getIdentifier("hour", "id", "android"));
-		pickersIds.add(system.getIdentifier("minute", "id", "android"));
-		pickersIds.add(system.getIdentifier("amPm", "id", "android"));
+		pickersIds = new HashMap<String, Integer> ();
+		pickersIds.put("hour", system.getIdentifier("hour", "id", "android"));
+		pickersIds.put("minute", system.getIdentifier("minute", "id", "android"));
+		pickersIds.put("amPm", system.getIdentifier("amPm", "id", "android"));
 		
 		separatorId = system.getIdentifier("divider", "id", "android");
 	}
 
 	public void setDividersColor(int color) {
 		dividersColor = color;
-		for (Integer id : pickersIds) {
-			changeNumberPickerDividers(id, color);
+		Set<String> keys = pickersIds.keySet();
+		for (String key : keys) {
+			changeNumberPickerDividers(pickersIds.get(key), color);
 		}
 	}
 
 	public void setForegroundColor(int color) {
 		foregroundColor = color;
-		for (Integer id : pickersIds) {
-			changeNumberPickerColor(id, color);			
+		Set<String> keys = pickersIds.keySet();
+		for (String key : keys) {
+			changeNumberPickerColor(pickersIds.get(key), color);
 		}
 		changeSeparatorColor(separatorId, color);
 	}
@@ -75,6 +81,18 @@ public class ExtendedTimePicker extends TimePicker {
 		TextView separator = (TextView)findViewById(separatorId);
 		if (separator != null) {
 			separator.setTextSize(size);
+		}
+	}
+	
+	public void setInnerPadding (int padding) {
+		innerPadding = padding;
+		NumberPicker picker = (NumberPicker)findViewById(pickersIds.get("hour"));
+		if (picker != null) {
+			picker.setX(picker.getX() + (float)padding / 2);		
+		}
+		picker = (NumberPicker)findViewById(pickersIds.get(is24HourView() ? "minute" : "amPm"));
+		if (picker != null) {
+			picker.setX(picker.getX() - (float)padding / 2);		
 		}
 	}
 	
@@ -92,6 +110,10 @@ public class ExtendedTimePicker extends TimePicker {
 			return separator.getTextSize();
 		}
 		return 0f;
+	}
+	
+	public int getInnerPadding() {
+		return innerPadding;
 	}
 
 	private void changeNumberPickerColor(int id, int color) {

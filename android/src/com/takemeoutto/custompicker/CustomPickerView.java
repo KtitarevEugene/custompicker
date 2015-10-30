@@ -25,6 +25,7 @@ public class CustomPickerView extends TiUIView {
 	private static final String PROPERTY_FORMAT_24 = "format24";
 	private static final String PROPERTY_SEPARATOR_SIZE = "separatorSize";
 	private static final String PROPERTY_VALUE = "value";
+	private static final String PROPERTY_INNER_PADDING = "innerPadding";
 
 	private ExtendedTimePicker timePicker;
 	
@@ -124,6 +125,13 @@ public class CustomPickerView extends TiUIView {
 				e.printStackTrace();				
 			}
 		}
+		if (d.containsKey(PROPERTY_INNER_PADDING)) {
+			try {
+				timePicker.setInnerPadding(TiConvert.toInt(d, PROPERTY_INNER_PADDING));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	@Override
@@ -144,6 +152,9 @@ public class CustomPickerView extends TiUIView {
 			} else if (key.equals(PROPERTY_SEPARATOR_SIZE)) {
 				float size = TiConvert.toFloat(newValue);
 				timePicker.setSeparatorSize(size);
+			} else if (key.equals(PROPERTY_INNER_PADDING)) {
+				int padding = TiConvert.toInt(newValue);
+				timePicker.setInnerPadding(padding);
 			} else {
 				super.propertyChanged(key, oldValue, newValue, proxy);
 			}
@@ -202,9 +213,21 @@ public class CustomPickerView extends TiUIView {
 		timePicker.setCurrentHour(c.get(Calendar.HOUR_OF_DAY));
 		timePicker.setCurrentMinute(c.get(Calendar.MINUTE));
 	}
+
 	public Object getTime() {
 		if (proxy.hasProperty(PROPERTY_VALUE)) {
 			return proxy.getProperty(PROPERTY_VALUE);
+		}
+		return null;
+	}
+	
+	public void setInnerPadding(int padding) {
+		timePicker.setInnerPadding(padding);
+	}
+	
+	public Object getInnerPadding() {
+		if (proxy.hasProperty(PROPERTY_INNER_PADDING)) {
+			return proxy.getProperty(PROPERTY_INNER_PADDING);
 		}
 		return null;
 	}

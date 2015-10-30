@@ -26,9 +26,11 @@ if (OS_ANDROID) {
         format24: true,                 // 24-hour time format 
         dividersColor: 'transparent',   // dividers color
         foregroundColor: 'black',       // foreground color
+        innerPadding: -50,              // padding between hours and minutes pickers,
+                                        // positive (negative) value decreases (increases)
+                                        // padding on given value from default one
         separatorSize: 28.0             // colon separator size
-	});
+	}); // necessary 
 
 	win.add(picker);
 }
-

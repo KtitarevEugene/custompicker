@@ -24,6 +24,7 @@ public class CustomPickerProxy extends TiViewProxy {
 	private static final int MSG_SET_MODE_24 = TiViewProxy.MSG_LAST_ID + 4003;
 	private static final int MSG_SET_TIME = TiViewProxy.MSG_LAST_ID + 4004;
 	private static final int MSG_SET_SEPARATOR_SIZE = TiViewProxy.MSG_LAST_ID + 4005;
+	private static final int MSG_SET_INNER_PADDING = TiViewProxy.MSG_LAST_ID + 4006;
 	
 	public CustomPickerProxy() {
 		super();
@@ -70,6 +71,12 @@ public class CustomPickerProxy extends TiViewProxy {
 			case MSG_SET_SEPARATOR_SIZE: {
 				AsyncResult result = (AsyncResult)message.obj;
 				handleMessageSetSeparatorSize(result.getArg());
+				result.setResult(null);
+				return true;
+			}
+			case MSG_SET_INNER_PADDING: {
+				AsyncResult result = (AsyncResult)message.obj;
+				handleMessageSetInnerPadding(result.getArg());
 				result.setResult(null);
 				return true;
 			}
@@ -162,6 +169,20 @@ public class CustomPickerProxy extends TiViewProxy {
 		return null;
 	}
 	
+	@Kroll.setProperty @Kroll.method
+	public void setInnerPadding (Object padding) {
+		TiMessenger.sendBlockingMainMessage(getMainHandler().obtainMessage(MSG_SET_INNER_PADDING), padding);
+	}
+	
+	@Kroll.getProperty @Kroll.method
+	public Object getInnerPadding () {
+		CustomPickerView view = (CustomPickerView)getOrCreateView();
+		if (view != null) {
+			return view.getInnerPadding();
+		}
+		return null;
+	}
+	
 	private void handleMessageSetDividersColor(Object arg) {
 		CustomPickerView view = (CustomPickerView)peekView();
 		if (view != null) {
@@ -199,6 +220,14 @@ public class CustomPickerProxy extends TiViewProxy {
 		if (view != null) {
 			Float size = TiConvert.toFloat(arg);
 			view.setSeparatorSize(size);
+		}
+	}
+	
+	private void handleMessageSetInnerPadding(Object arg) {
+		CustomPickerView view = (CustomPickerView)peekView();
+		if (view != null) {
+			Integer padding = TiConvert.toInt(arg);
+			view.setInnerPadding(padding);
 		}
 	}
 }
