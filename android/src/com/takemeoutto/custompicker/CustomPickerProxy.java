@@ -153,7 +153,6 @@ public class CustomPickerProxy extends TiViewProxy {
 		}
 		return null;
 	}
-
 	
 	@Kroll.setProperty @Kroll.method
 	public void setValue (Object timeObject) {
@@ -184,7 +183,7 @@ public class CustomPickerProxy extends TiViewProxy {
 	}
 	
 	private void handleMessageSetDividersColor(Object arg) {
-		CustomPickerView view = (CustomPickerView)peekView();
+		CustomPickerView view = (CustomPickerView)getOrCreateView();
 		if (view != null) {
 			Integer color = (Integer)arg;
 			view.setDividersColor(color);		
@@ -192,7 +191,7 @@ public class CustomPickerProxy extends TiViewProxy {
 	}
 	
 	private void handleMessageSetForegroundColor(Object arg) {
-		CustomPickerView view = (CustomPickerView)peekView();
+		CustomPickerView view = (CustomPickerView)getOrCreateView();
 		if (view != null) {
 			Integer color = (Integer)arg;
 			view.setForegroundColor(color);
@@ -200,7 +199,7 @@ public class CustomPickerProxy extends TiViewProxy {
 	}
 	
 	private void handleMessageSetMode24(Object arg) {
-		CustomPickerView view = (CustomPickerView)peekView();
+		CustomPickerView view = (CustomPickerView)getOrCreateView();
 		if (view != null) {
 			Boolean format24 = (Boolean)arg;
 			view.setFormat24(format24);
@@ -208,7 +207,7 @@ public class CustomPickerProxy extends TiViewProxy {
 	}
 	
 	private void handleMessageSetTime(Object arg) {
-		CustomPickerView view = (CustomPickerView)peekView();
+		CustomPickerView view = (CustomPickerView)getOrCreateView();
 		if (view != null) {
 			Date time = TiConvert.toDate(arg);
 			view.setTime(time);
@@ -216,7 +215,7 @@ public class CustomPickerProxy extends TiViewProxy {
 	}
 	
 	private void handleMessageSetSeparatorSize(Object arg) {
-		CustomPickerView view = (CustomPickerView)peekView();
+		CustomPickerView view = (CustomPickerView)getOrCreateView();
 		if (view != null) {
 			Float size = TiConvert.toFloat(arg);
 			view.setSeparatorSize(size);
@@ -224,7 +223,7 @@ public class CustomPickerProxy extends TiViewProxy {
 	}
 	
 	private void handleMessageSetInnerPadding(Object arg) {
-		CustomPickerView view = (CustomPickerView)peekView();
+		CustomPickerView view = (CustomPickerView)getOrCreateView();
 		if (view != null) {
 			Integer padding = TiConvert.toInt(arg);
 			view.setInnerPadding(padding);

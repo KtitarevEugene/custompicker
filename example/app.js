@@ -30,7 +30,7 @@ if (OS_ANDROID) {
                                         // positive (negative) value decreases (increases)
                                         // padding on given value from default one
         separatorSize: 28.0             // colon separator size
-	}); // necessary 
+	});
 
 	win.add(picker);
 }
